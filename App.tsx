@@ -45,7 +45,7 @@ function App(): JSX.Element {
 
     return (
         <SafeAreaView style={backgroundStyle}>
-            <ToolBar config={StyleConfig} height={45} 
+            <ToolBar config={StyleConfig.toolbar} height={45} 
                 icon={{
                     iconWidth: 55,
                     iconSize: 40

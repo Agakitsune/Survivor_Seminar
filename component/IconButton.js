@@ -35,10 +35,10 @@ function IconButton(props) {
             }}
             android_ripple={{
                 borderless: false,
-                color: config.ripple.color0
+                color: config.ripple
             }}
             style={{
-                backgroundColor: pressed ? config.main.color1 : config.main.color0,
+                backgroundColor: pressed ? config.alt : config.main,
                 width: width ? width : 'auto',
                 height: height ? height : 'auto'
             }}
@@ -51,7 +51,7 @@ function IconButton(props) {
                     justifyContent: 'center'
                 }}
             >
-                <Icon name={icon} color={iconColor ? iconColor : config.icon.color0} size={size} />
+                <Icon name={icon} color={iconColor ? iconColor : config.icon} size={size} />
             </View>
         </Pressable>
     );

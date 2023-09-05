@@ -24,7 +24,7 @@ export default function ToolBar(props) {
             size={iconSize}
             action={tool.action}
             longAction={tool.longAction}
-            config={StyleConfig}
+            config={config.icon}
             width={iconWidth ? iconWidth : height}
             height={height}
         />
@@ -37,7 +37,7 @@ export default function ToolBar(props) {
             size={iconSize}
             action={tool.action}
             longAction={tool.longAction}
-            config={StyleConfig}
+            config={config.icon}
             width={iconWidth ? iconWidth : height}
             height={height}
         />
@@ -49,7 +49,7 @@ export default function ToolBar(props) {
     return (
         <View
             style={{
-                backgroundColor: config.main.background0,
+                backgroundColor: config.main,
                 width: width ? width : 'auto',
                 height: height,
                 flexDirection: 'row',
