@@ -1,6 +1,7 @@
-#Wed Sep 06 16:43:57 RET 2023
+#Thu Sep 07 07:52:51 RET 2023
 base.0=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.10=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeLibDexDebug/1/classes.dex
 base.2=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/13/classes.dex
 base.3=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
 base.4=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeLibDexDebug/2/classes.dex
@@ -11,6 +12,7 @@ base.8=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mer
 base.9=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
+path.10=1/classes.dex
 path.2=13/classes.dex
 path.3=14/classes.dex
 path.4=2/classes.dex
@@ -21,6 +23,7 @@ path.8=9/classes.dex
 path.9=classes2.dex
 renamed.0=classes.dex
 renamed.1=classes2.dex
+renamed.10=classes11.dex
 renamed.2=classes3.dex
 renamed.3=classes4.dex
 renamed.4=classes5.dex

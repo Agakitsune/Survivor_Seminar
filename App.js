@@ -6,6 +6,8 @@
  */
 
 import React, {useRef, useEffect, useState} from 'react';
+import axios from 'axios'
+
 import {
     SafeAreaView,
     ScrollView,
@@ -16,16 +18,12 @@ import {
     View,
     TouchableNativeFeedback,
     Animated,
-    PanResponder
+    PanResponder,
+    TextInput,
+    Button,
+    ActivityIndicator,
+    Alert
 } from 'react-native';
-
-import {
-    Colors,
-    DebugInstructions,
-    Header,
-    LearnMoreLinks,
-    ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 import StyleConfig from './StyleConfig';
 
@@ -36,189 +34,122 @@ import Drop from './component/Drop';
 import { createMyNavigator } from './component/Truc';
 import { NavigationContainer } from '@react-navigation/native';
 
-function Thing() {
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-    const [position, setPosition] = useState({x: 0, y: 0});
-    const [width, setWidth] = useState(150);
-    const [height, setHeight] = useState(150);
+import Cards from './component/Card';
 
-    const pan = useRef(new Animated.ValueXY(position)).current;
-    const widthAnim = useRef(new Animated.Value(width)).current;
-    const heightAnim = useRef(new Animated.Value(height)).current;
+function login(email, password) {
+  const headers = {
+    'accept': 'application/json',
+    'X-Group-Authorization': 'oNLNtdimPh8oE_Qi-dBQDvujQsSm7tMN',
+    'Content-Type': 'application/json'
+  }
 
-    widthAnim.addListener((value) => setWidth(value.value));
-    heightAnim.addListener((value) => setHeight(value.value));
-    pan.addListener((value) => setPosition(value));
-
-    const panResponder = useRef(
-        PanResponder.create({
-            onMoveShouldSetPanResponder: () => true,
-            onPanResponderGrant: () => {
-                console.log(position) 
-            },
-            // onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver:false}),
-            onPanResponderMove: (e, gesture) => {
-                click = {x: gesture.x0 - position.x, y: gesture.y0 - position.y};
-
-                // console.log(click);
-                // console.log(position);
-
-                action = Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver:false});
-                if (click.x <= 20 && click.y <= 20) {
-                    action = (e, gesture) => {
-                        Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver:false})(e, gesture);
-                        Animated.event([null, {dx: widthAnim, dy: heightAnim}], {useNativeDriver:false})(e, gesture);
-                    }
-                }
-
-                action(e, gesture); 
-            },
-            onPanResponderRelease: () => {
-                pan.extractOffset();
-            }
-        }),
-    ).current;
-
-    // console.log(position);
-
-    return (
-        <Animated.View
-            style={{
-                // transform: [{translateX: pan.x}, {translateY: pan.y}],
-                position: 'absolute',
-                top: position.y,
-                left: position.x,
-            }}
-            {...panResponder.panHandlers}
-        >
-            <View
-                style={{
-                    backgroundColor: '#b784a740',
-                    width: width,
-                    height: height,
-                    padding: 10,
-                }}
-            >
-                <View
-                    style={{
-                        backgroundColor: '#d9d9d9',
-
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: 10,
-                    }}
-                >
-                    <View
-                        style={{
-                            position: 'absolute',
-                            backgroundColor: '#00ffff',
-                            width: 16,
-                            height: 16,
-                            top: -8,
-                            left: -8,
-                            borderRadius: 10,
-                        }}
-                    />
-                    <View
-                        style={{
-                            position: 'absolute',
-                            backgroundColor: '#00ffff',
-                            width: 16,
-                            height: 16,
-                            top: -8,
-                            left: width - 28,
-                            borderRadius: 10,
-                        }}
-                    />
-                    <View
-                        style={{
-                            position: 'absolute',
-                            backgroundColor: '#00ffff',
-                            width: 16,
-                            height: 16,
-                            top: height - 28,
-                            left: - 8,
-                            borderRadius: 10,
-                        }}
-                    />
-                    <View
-                        style={{
-                            position: 'absolute',
-                            backgroundColor: '#00ffff',
-                            width: 16,
-                            height: 16,
-                            top: height - 28,
-                            left: width - 28,
-                            borderRadius: 10,
-                        }}
-                    />
-                </View>
-            </View>
-        </Animated.View>
-    )
+  return (axios.post('https://masurao.fr/api/employees/login', {email, password}, {headers}))
 }
 
-function Hmm() {
-    const pan = useRef(new Animated.ValueXY()).current;
+function getEmployees() {
+  const headers = {
+    'accept': 'application/json',
+    'X-Group-Authorization': 'oNLNtdimPh8oE_Qi-dBQDvujQsSm7tMN',
+    'Authorization': 'Bearer ' + access_token
+  };
 
-    const width = useRef(new Animated.Value(150)).current;
-    const height = useRef(new Animated.Value(150)).current;
+  return (axios.get('https://masurao.fr/api/employees', {headers}))
+}
 
-    const [__width, setWidth] = useState(150);
-    const [__height, setHeight] = useState(150);
+function HomeScreen({navigation, router}) {
 
-    width.addListener((value) => setWidth(value.value));
-    height.addListener((value) => setHeight(value.value));
+    const [acc_token, setToken] = useState(null);
 
-    const panResponder = useRef(
-        PanResponder.create({
-            onMoveShouldSetPanResponder: () => true,
-            // onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver:false}),
-            onPanResponderMove: Animated.event([null, {dx: width, dy: height}], {useNativeDriver:false}),
-            onPanResponderRelease: () => {
-                Animated.spring(pan, {
-                    toValue: {x: 0, y: 0},
-                    friction: 1,
-                    useNativeDriver: true,
-                }).start();
-                Animated.spring(width, {
-                    toValue: __width + 50,
-                    friction: 1,
-                    useNativeDriver: true,
-                }).start();
-                Animated.spring(height, {
-                    toValue: __height + 50,
-                    friction: 1,
-                    useNativeDriver: true,
-                }).start();
+    useEffect(() => {
+        try {
+            const tok = AsyncStorage.getItem('token');
+            console.log(tok);
+            if (tok != null && typeof tok == 'string') {
+                setToken(tok);
             }
-        }),
-    ).current;
+        } catch (e) {
+            console.log(e);
+        }
+    }, []);
 
     return (
-        <View style={styles.container}>
-        <Text style={styles.titleText}>Drag & Release this box!</Text>
-        <Animated.View
-            style={{
-                transform: [{translateX: pan.x}, {translateY: pan.y}],
-            }}
-            {...panResponder.panHandlers}
-        >
-            <View style={{
-                width: __width,
-                height: __height,
-                backgroundColor: 'blue',
-                borderRadius: 5,
-            }} />
-        </Animated.View>
+        <View>
+            <Drag />
+            { acc_token && <Text>{acc_token}</Text> }
         </View>
     );
 }
 
-function HomeScreen() {
+function LoginScreen({navigation}) {
+
+    const [loading, setLoading] = useState(false);
+
+    const log = (email, password) => {
+        setLoading(true);
+        login(email, password)
+            .then(function (response) {
+                access_token = response.data;
+                navigation.navigate('home', { token: response.data.access_token})
+                setLoading(false);
+                console.log(response.data.access_token);
+                try {
+                    AsyncStorage.setItem('token', response.data.access_token, () => {
+                        console.log('token saved');
+                    });
+                } catch (e) {
+                    console.log(e);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                setLoading(false);
+                Alert.alert('Error', 'Wrong email or password');
+            })
+    }
+
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Home Screen</Text>
+        <View
+            style={{
+                padding: 20
+            }}
+        >
+            <Text>Welcome to ???</Text>
+            <View style={styles.login_box}>
+                <Text>Email</Text>
+                <TextInput
+                    style={styles.input}
+                    keyboardType='email-address'
+                    onChangeText={setEmail}
+                    value={email}
+                    placeholder="Email"
+                />
+                <Text>Password</Text>
+                <TextInput
+                    secureTextEntry={true}
+                    style={styles.input}
+                    onChangeText={setPassword}
+                    value={password}
+                    placeholder="Password"
+                />
+                <Button
+                    title='Login'
+                    onPress={() => log(email, password)}
+                />
+                {loading &&
+                    <View
+                        style={{
+                            marginTop: 20,
+                        }}
+                    >
+                        <ActivityIndicator size='large' />
+                    </View>
+                }
+            </View>
         </View>
     );
 }
@@ -230,28 +161,79 @@ function App() {
 
     const drop = new Drop({x: 0, y: 0}, {x: 500, y: 500}, 150)
 
+    const [loading, setLoading] = useState(true);
+    const [acc_token, setToken] = useState(null);
+
+    useEffect(() => {
+        try {
+            const tok = AsyncStorage.getItem('token');
+            console.log(tok);
+            if (tok != null && typeof tok == 'string') {
+                setToken(tok);
+            }
+            setLoading(false);
+        } catch (e) {
+            console.log(e);
+        }
+    }, []);
+
+    if (loading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <ActivityIndicator size='large' />
+            </View>
+        )
+    }
+
+    console.log(acc_token);
+
     return (
-        <View style={styles.container}>
-            <Drag />
-        </View>
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName={acc_token ? 'home' : 'login'} >
+                <Stack.Screen name='login' component={LoginScreen}/>
+                <Stack.Screen name='home' component={HomeScreen} options={{token : acc_token}} />
+            </Stack.Navigator>
+        </NavigationContainer>
     );
 }
 
 const styles = StyleSheet.create({
-container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-},
-titleText: {
-    fontSize: 14,
-    lineHeight: 24,
-    fontWeight: 'bold',
-},
-box: {
-    backgroundColor: 'blue',
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    titleText: {
+        fontSize: 14,
+        lineHeight: 24,
+        fontWeight: 'bold',
+    },
+    box: {
+        backgroundColor: 'blue',
+        borderRadius: 5,
+    },
+    logo: {
+
+    },
+    input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
     borderRadius: 5,
-},
+    padding: 10,
+    },
+    login_box: {
+
+    },
+    button: {
+
+    }
 });
 
 export default App;

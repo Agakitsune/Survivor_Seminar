@@ -9,7 +9,7 @@ const Cards = (props) => {
                     <Image
                         style={styles.profile}
                         borderRadius={500}
-                        source={require("./assets/Blank-Avatar.png")}
+                        source={require("../assets/Blank-Avatar.png")}
                         alt='Profile'
                     />
                 </Pressable>
