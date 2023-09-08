@@ -40,14 +40,15 @@ function App() {
     getEmployees()
       .then(function (response) {
         setData(response.data);
-        console.log('toto');
-        console.log(data);
       })
   }, [])
 
   return (
     <View>
-      <FlatList 
+      <FlatList style={{
+        height: '100%',
+        width: '100%',}
+      }
         data={data}
         renderItem={({item}) => <Cards name={item.name} id={item.id} token={access_token}/>}
       />
