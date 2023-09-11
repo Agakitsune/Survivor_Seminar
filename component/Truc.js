@@ -6,9 +6,10 @@ import {
   createNavigatorFactory,
   TabRouter,
   TabActions,
+  StackRouter,
 } from '@react-navigation/native';
 
-function TabNavigator({
+function StackNavigator({
   initialRouteName,
   children,
   screenOptions,
@@ -16,7 +17,7 @@ function TabNavigator({
   contentStyle,
 }) {
   const { state, navigation, descriptors, NavigationContent } =
-    useNavigationBuilder(TabRouter, {
+    useNavigationBuilder(StackRouter, {
       children,
       screenOptions,
       initialRouteName,
@@ -67,4 +68,4 @@ function TabNavigator({
   );
 }
 
-export const createMyNavigator = createNavigatorFactory(TabNavigator);
+export const createMyNavigator = createNavigatorFactory(StackNavigator);

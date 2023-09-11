@@ -1,4 +1,4 @@
-#Thu Sep 07 07:52:51 RET 2023
+#Sun Sep 10 17:39:44 RET 2023
 base.0=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
 base.10=/home/furr/Survivor_Seminar/android/app/build/intermediates/dex/debug/mergeLibDexDebug/1/classes.dex

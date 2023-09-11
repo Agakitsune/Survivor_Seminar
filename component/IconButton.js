@@ -12,26 +12,24 @@ function IconButton(props) {
     const { icon, iconColor, size } = props;
     const { width, height } = props;
     const { config } = props;
+    const { disabled } = props;
 
     const [longPress, setLongPress] = useState(false);
     const [pressed, setPressed] = useState(false);
 
     return (
         <Pressable
-            onPressIn={() => {
+            disabled={disabled}
+            onPress={(event) => {
+                if (longPress) {
+                    longAction ? longAction(event) : action ? action(event) : null;
+                } else {
+                    action ? action(event) : null;
+                }
                 setLongPress(false);
-                setPressed(true);
             }}
             onLongPress={() => {
                 setLongPress(true)
-            }}
-            onPressOut={() => {
-                if (longPress) {
-                    longAction ? longAction() : action ? action() : null;
-                } else {
-                    action ? action() : null;
-                }
-                setPressed(false);
             }}
             android_ripple={{
                 borderless: false,
@@ -51,7 +49,7 @@ function IconButton(props) {
                     justifyContent: 'center'
                 }}
             >
-                <Icon name={icon} color={iconColor ? iconColor : config.icon} size={size} />
+                <Icon name={icon} color={iconColor ? iconColor : disabled ? config.disabled : config.icon} size={size} />
             </View>
         </Pressable>
     );

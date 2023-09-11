@@ -5,164 +5,161 @@
  * @format
  */
 
-import React, {useRef, useEffect, useState} from 'react';
-import axios from 'axios'
+import React, {useRef, useEffect, useState, Component} from 'react';
 
 import {
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
     useColorScheme,
     View,
-    TouchableNativeFeedback,
-    Animated,
-    PanResponder,
-    TextInput,
-    Button,
     ActivityIndicator,
-    Alert
+    Button,
 } from 'react-native';
 
-import StyleConfig from './StyleConfig';
-
-import ToolBar from './component/ToolBar';
-import Drag from './component/Drag';
-import Drop from './component/Drop';
-
 import { createMyNavigator } from './component/Truc';
-import { NavigationContainer } from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import Cards from './component/Card';
+import LoginScreen from './screen/Login';
+import HomeScreen from './screen/Home';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function login(email, password) {
-  const headers = {
-    'accept': 'application/json',
-    'X-Group-Authorization': 'oNLNtdimPh8oE_Qi-dBQDvujQsSm7tMN',
-    'Content-Type': 'application/json'
-  }
+import Widget from './component/Widget';
+import Test from './component/Test';
+import Time from './component/Time';
+import WidgetZone from './component/WidgetZone';
 
-  return (axios.post('https://masurao.fr/api/employees/login', {email, password}, {headers}))
+const Stack = createMyNavigator();
+
+const uid = function(){
+    return Date.now().toString(36) + Math.random().toString(36);
 }
 
-function getEmployees() {
-  const headers = {
-    'accept': 'application/json',
-    'X-Group-Authorization': 'oNLNtdimPh8oE_Qi-dBQDvujQsSm7tMN',
-    'Authorization': 'Bearer ' + access_token
-  };
+function Zone(props) {
+    const { widgets } = props;
 
-  return (axios.get('https://masurao.fr/api/employees', {headers}))
-}
+    const x = useRef();
+    const y = useRef();
+    const width = useRef();
+    const height = useRef();
 
-function HomeScreen({navigation, router}) {
+    const unit = useRef();
+    const unitSize = useRef();
 
-    const [acc_token, setToken] = useState(null);
+    const grid = useRef([]);
 
-    useEffect(() => {
-        try {
-            const tok = AsyncStorage.getItem('token');
-            console.log(tok);
-            if (tok != null && typeof tok == 'string') {
-                setToken(tok);
+    const [padding, setPadding] = useState(null);
+    // debug
+    const [_grid, setGrid] = useState([]);
+
+    const calculate = () => {
+        const _unit = {x: Math.floor(width.current / 70), y: Math.floor(height.current / 70) - 1};
+        const _size = Math.floor(width.current / _unit.x);
+
+        unit.current = _unit;
+        unitSize.current = _size;
+
+        pad = {
+            x: Math.floor((width.current - (_size * _unit.x)) / 2),
+            y: Math.floor((height.current - (_size * _unit.y)) / 2)
+        };
+
+        const _grid = [];
+
+        for (let i = 0; i < _unit.x; i++) {
+            let row = [];
+            for (let j = 0; j < _unit.y; j++) {
+                _grid.push({x: i, y: j});
+                row.push(null);
             }
-        } catch (e) {
-            console.log(e);
+            grid.current.push(row);
         }
-    }, []);
 
-    return (
-        <View>
-            <Drag />
-            { acc_token && <Text>{acc_token}</Text> }
-        </View>
-    );
-}
-
-function LoginScreen({navigation}) {
-
-    const [loading, setLoading] = useState(false);
-
-    const log = (email, password) => {
-        setLoading(true);
-        login(email, password)
-            .then(function (response) {
-                access_token = response.data;
-                navigation.navigate('home', { token: response.data.access_token})
-                setLoading(false);
-                console.log(response.data.access_token);
-                try {
-                    AsyncStorage.setItem('token', response.data.access_token, () => {
-                        console.log('token saved');
-                    });
-                } catch (e) {
-                    console.log(e);
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-                setLoading(false);
-                Alert.alert('Error', 'Wrong email or password');
-            })
+        setPadding(pad);
+        setGrid(_grid);
     }
-
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
 
     return (
         <View
+            onLayout={(event) => {
+                const {x: _x, y: _y, width: _width, height: _height} = event.nativeEvent.layout;
+                x.current = _x;
+                y.current = _y;
+                width.current = Math.floor(_width);
+                height.current = Math.floor(_height);
+                calculate();
+            }}
             style={{
-                padding: 20
+                width: '100%',
+                height: '100%',
+                paddingHorizontal: padding ? padding.x : 0,
+                paddingVertical: padding ? padding.y : 0,
             }}
         >
-            <Text>Welcome to ???</Text>
-            <View style={styles.login_box}>
-                <Text>Email</Text>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='email-address'
-                    onChangeText={setEmail}
-                    value={email}
-                    placeholder="Email"
-                />
-                <Text>Password</Text>
-                <TextInput
-                    secureTextEntry={true}
-                    style={styles.input}
-                    onChangeText={setPassword}
-                    value={password}
-                    placeholder="Password"
-                />
-                <Button
-                    title='Login'
-                    onPress={() => log(email, password)}
-                />
-                {loading &&
-                    <View
-                        style={{
-                            marginTop: 20,
-                        }}
-                    >
-                        <ActivityIndicator size='large' />
-                    </View>
-                }
-            </View>
+            {padding != null ?
+                <>
+                    {_grid.map((data) => {
+                        return <View
+                            key={uid()}
+                            style={{
+                                position: 'absolute',
+                                top: data.y * unitSize.current,
+                                left: data.x * unitSize.current,
+                                width: unitSize.current,
+                                height: unitSize.current,
+                                padding: 5
+                            }}
+                        >
+                            <View style={{
+                                backgroundColor: '#00440080',
+                                width: '100%',
+                                height: '100%'
+                            }}/>
+                        </View>
+                    })}
+                    {widgets.map((widget) => {
+                        return widget.render(
+                            {props: {
+                                key: uid(),
+                                x: x,
+                                y: y,
+                                width: width,
+                                height: height,
+                                unit: unit,
+                                size: unitSize,
+                            }, ...widget}
+                        );
+                    })}
+                </>
+                :
+                <></>
+            }
         </View>
-    );
+    )
 }
 
-const Stack = createMyNavigator();
+class Wix extends Component {
+    constructor(props) {
+        super(props);
+        console.log(props);
+    }
+
+    Test() {
+        console.log("test");
+    }
+
+    render() {
+        return (
+            <></>
+        )
+    }
+}
 
 function App() {
     const isDarkMode = useColorScheme() === 'dark';
 
-    const drop = new Drop({x: 0, y: 0}, {x: 500, y: 500}, 150)
-
     const [loading, setLoading] = useState(true);
     const [acc_token, setToken] = useState(null);
+
+    const zone = useRef(null);
 
     useEffect(() => {
         try {
@@ -191,49 +188,28 @@ function App() {
         )
     }
 
-    console.log(acc_token);
+    // <NavigationContainer>
+    //     <Stack.Navigator initialRouteName={acc_token ? 'home' : 'login'} >
+    //         <Stack.Screen name='login' component={LoginScreen}/>
+    //         <Stack.Screen name='home' component={HomeScreen}/>
+    //     </Stack.Navigator>
+    // </NavigationContainer>
+
+    const data = [
+        {
+            type: Time,
+            initial: {
+                x: 0,
+                y: 1,
+                width: 3,
+                height: 3,
+            }
+        }
+    ]
 
     return (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName={acc_token ? 'home' : 'login'} >
-                <Stack.Screen name='login' component={LoginScreen}/>
-                <Stack.Screen name='home' component={HomeScreen} options={{token : acc_token}} />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <WidgetZone widgets={data} data={zone}/>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    titleText: {
-        fontSize: 14,
-        lineHeight: 24,
-        fontWeight: 'bold',
-    },
-    box: {
-        backgroundColor: 'blue',
-        borderRadius: 5,
-    },
-    logo: {
-
-    },
-    input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    },
-    login_box: {
-
-    },
-    button: {
-
-    }
-});
 
 export default App;

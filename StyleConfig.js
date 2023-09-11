@@ -11,7 +11,8 @@ export default StyleConfig = {
             main: '#d9d9d9',
             alt: '#c9c9c9',
             ripple: '#a9a9a9',
-            icon: '#000'
+            icon: '#000',
+            disabled: '#a9a9a9'
         }
     }
 }

@@ -27,6 +27,7 @@ export default function ToolBar(props) {
             config={config.icon}
             width={iconWidth ? iconWidth : height}
             height={height}
+            disabled={tool.disabled}
         />
     )
 
@@ -40,11 +41,9 @@ export default function ToolBar(props) {
             config={config.icon}
             width={iconWidth ? iconWidth : height}
             height={height}
+            disabled={tool.disabled}
         />
     )
-
-    console.log(left);
-    console.log(right);
 
     return (
         <View
